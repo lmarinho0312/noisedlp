@@ -1,27 +1,39 @@
 /**
- * NOISED FESTIVAL — MOBILE FIRST INTERACTIVE CONTROLLER
- * Includes 60 FPS Thin Floating Neon Fagulhas (Sparks) Canvas Generator
+ * NOISED FESTIVAL — ULTRA HIGH-PERFORMANCE 60 FPS CONTROLLER
+ * Optimized for Mobile GPUs with Zero Layout Thrashing
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
   /* --------------------------------------------------------------------------
-     1. Floating Thin Sparks (Fagulhas Finas & Compridas) Canvas Animation
+     1. Ultra-Lightweight 60 FPS Floating Fagulhas Canvas (Zero shadowBlur Lag)
      -------------------------------------------------------------------------- */
   const canvas = document.getElementById('sparks-canvas');
   if (canvas) {
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
+
+    let isScrolling = false;
+    let scrollTimeout = null;
+
+    // Pause canvas updates when user scrolls rapidly to prioritize 60 FPS scroll performance
+    window.addEventListener('scroll', () => {
+      isScrolling = true;
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        isScrolling = false;
+      }, 150);
+    }, { passive: true });
 
     window.addEventListener('resize', () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-    });
+    }, { passive: true });
 
-    // Exact Project Palette: Pink Neon, Cyan Neon, Purple Neon, Magenta (NO Yellow!)
+    // Strict Festival Palette (NO Yellow!)
     const colors = ['#FF2E9A', '#19D3FF', '#7A2EFF', '#FF2EC8'];
-    const sparkCount = Math.min(50, Math.floor(width / 24));
+    const sparkCount = Math.min(28, Math.floor(width / 35));
 
     class Spark {
       constructor() {
@@ -30,14 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       reset() {
         this.x = Math.random() * width;
-        this.y = height + Math.random() * 80;
-        this.length = Math.random() * 14 + 8; // Thin elongated spark length (8px - 22px)
-        this.thickness = Math.random() * 1.0 + 1.0; // Thin width (1.0px - 2.0px)
+        this.y = height + Math.random() * 60;
+        this.length = Math.random() * 12 + 8;
+        this.thickness = Math.random() * 0.8 + 1.0;
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.speedY = Math.random() * 1.2 + 0.5; // Upward drift
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.angle = (Math.random() - 0.5) * 0.35; // Slight tilt angle
-        this.opacity = Math.random() * 0.65 + 0.25;
+        this.speedY = Math.random() * 1.1 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.angle = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.6 + 0.25;
         this.fadeSpeed = Math.random() * 0.004 + 0.0015;
       }
 
@@ -46,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.x += this.speedX;
         this.opacity -= this.fadeSpeed;
 
-        if (this.y < -30 || this.opacity <= 0) {
+        if (this.y < -20 || this.opacity <= 0) {
           this.reset();
         }
       }
@@ -60,8 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.strokeStyle = this.color;
         ctx.lineWidth = this.thickness;
         ctx.lineCap = 'round';
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = this.color;
+        // Note: shadowBlur is intentionally omitted for maximum 60 FPS GPU performance!
 
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -76,10 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const animateSparks = () => {
       ctx.clearRect(0, 0, width, height);
-      sparks.forEach(spark => {
-        spark.update();
-        spark.draw();
-      });
+      if (!isScrolling) {
+        sparks.forEach(spark => {
+          spark.update();
+          spark.draw();
+        });
+      }
       requestAnimationFrame(animateSparks);
     };
 
@@ -111,12 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* --------------------------------------------------------------------------
-     3. Top Scroll Progress Bar & Header Scroll Effect
+     3. RAF Throttled Scroll Progress Bar & Header Scroll Effect
      -------------------------------------------------------------------------- */
   const scrollProgressBar = document.getElementById('scroll-progress');
   const siteHeader = document.getElementById('header');
 
-  const handleScroll = () => {
+  let ticking = false;
+
+  const updateScrollState = () => {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     
@@ -132,10 +147,17 @@ document.addEventListener('DOMContentLoaded', () => {
         siteHeader.classList.remove('scrolled');
       }
     }
+    ticking = false;
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
-  handleScroll();
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateScrollState);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  updateScrollState();
 
 
   /* --------------------------------------------------------------------------
@@ -187,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, {
     root: null,
-    threshold: 0.12,
-    rootMargin: '0px 0px -40px 0px'
+    threshold: 0.08,
+    rootMargin: '0px 0px -20px 0px'
   });
 
   revealElements.forEach(el => revealObserver.observe(el));
@@ -234,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* --------------------------------------------------------------------------
-     7. Desktop Lerp Custom Neon Cursor
+     7. Desktop Custom Neon Cursor (Disabled on Touch Devices)
      -------------------------------------------------------------------------- */
   const cursorDot = document.getElementById('cursor-dot');
   const cursorCircle = document.getElementById('cursor-circle');
@@ -249,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mouseX = e.clientX;
       mouseY = e.clientY;
       cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-    });
+    }, { passive: true });
 
     const animateCursor = () => {
       circleX += (mouseX - circleX) * 0.15;
@@ -261,8 +283,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const interactiveEls = document.querySelectorAll('button, a, .artist-card, .ticket-tier-item');
     interactiveEls.forEach(el => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'), { passive: true });
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'), { passive: true });
     });
   }
 
