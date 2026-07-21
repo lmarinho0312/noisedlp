@@ -204,7 +204,7 @@ ul {
   -webkit-text-fill-color: transparent;
 }
 
-/* High-Performance Glass Card Utility (No heavy backdrop-filter blur on scroll) */
+/* High-Performance Glass Card Utility */
 .glass-card {
   background: var(--bg-card);
   border: 1px solid var(--glass-border);
@@ -436,7 +436,7 @@ ul {
 }
 
 /* --------------------------------------------------------------------------
-   Hero Section (Backup Stage Background)
+   Hero Section (Framed Stage Background)
    -------------------------------------------------------------------------- */
 .hero-section {
   position: relative;
@@ -465,7 +465,7 @@ ul {
   width: 100%;
   height: 100%;
   background-size: cover;
-  background-position: center center;
+  background-position: center 30%;
   background-repeat: no-repeat;
   filter: brightness(0.92) contrast(1.05);
 }
