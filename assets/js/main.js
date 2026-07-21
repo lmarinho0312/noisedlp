@@ -1,30 +1,18 @@
 /**
  * NOISED FESTIVAL — ULTRA HIGH-PERFORMANCE 60 FPS CONTROLLER
- * Optimized for Mobile GPUs with Zero Layout Thrashing
+ * Full Page Floating Neon Fagulhas (Sparks) Canvas Generator
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
   /* --------------------------------------------------------------------------
-     1. Ultra-Lightweight 60 FPS Floating Fagulhas Canvas (Zero shadowBlur Lag)
+     1. Full Page Floating Thin Sparks (Fagulhas Finas & Compridas) Canvas
      -------------------------------------------------------------------------- */
   const canvas = document.getElementById('sparks-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d', { alpha: true });
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
-
-    let isScrolling = false;
-    let scrollTimeout = null;
-
-    // Pause canvas updates when user scrolls rapidly to prioritize 60 FPS scroll performance
-    window.addEventListener('scroll', () => {
-      isScrolling = true;
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        isScrolling = false;
-      }, 150);
-    }, { passive: true });
 
     window.addEventListener('resize', () => {
       width = canvas.width = window.innerWidth;
@@ -33,24 +21,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Strict Festival Palette (NO Yellow!)
     const colors = ['#FF2E9A', '#19D3FF', '#7A2EFF', '#FF2EC8'];
-    const sparkCount = Math.min(28, Math.floor(width / 35));
+    const sparkCount = Math.min(48, Math.floor(width / 22));
 
     class Spark {
       constructor() {
-        this.reset();
+        this.reset(true);
       }
 
-      reset() {
+      reset(initial = false) {
         this.x = Math.random() * width;
-        this.y = height + Math.random() * 60;
-        this.length = Math.random() * 12 + 8;
-        this.thickness = Math.random() * 0.8 + 1.0;
+        this.y = initial ? Math.random() * height : height + Math.random() * 40;
+        this.length = Math.random() * 14 + 8; // Thin elongated length (8px to 22px)
+        this.thickness = Math.random() * 1.0 + 1.0; // Thin width (1.0px to 2.0px)
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.speedY = Math.random() * 1.1 + 0.5;
+        this.speedY = Math.random() * 1.2 + 0.5; // Upward drift
         this.speedX = (Math.random() - 0.5) * 0.4;
-        this.angle = (Math.random() - 0.5) * 0.3;
-        this.opacity = Math.random() * 0.6 + 0.25;
-        this.fadeSpeed = Math.random() * 0.004 + 0.0015;
+        this.angle = (Math.random() - 0.5) * 0.3; // Slight tilt
+        this.opacity = Math.random() * 0.65 + 0.25;
+        this.fadeSpeed = Math.random() * 0.003 + 0.0012;
       }
 
       update() {
@@ -58,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         this.x += this.speedX;
         this.opacity -= this.fadeSpeed;
 
-        if (this.y < -20 || this.opacity <= 0) {
-          this.reset();
+        if (this.y < -30 || this.opacity <= 0) {
+          this.reset(false);
         }
       }
 
@@ -72,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.strokeStyle = this.color;
         ctx.lineWidth = this.thickness;
         ctx.lineCap = 'round';
-        // Note: shadowBlur is intentionally omitted for maximum 60 FPS GPU performance!
 
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -87,12 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const animateSparks = () => {
       ctx.clearRect(0, 0, width, height);
-      if (!isScrolling) {
-        sparks.forEach(spark => {
-          spark.update();
-          spark.draw();
-        });
-      }
+      sparks.forEach(spark => {
+        spark.update();
+        spark.draw();
+      });
       requestAnimationFrame(animateSparks);
     };
 
