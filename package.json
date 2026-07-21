@@ -1,0 +1,21 @@
+{
+  "name": "noised-festival-landing-page",
+  "version": "1.0.0",
+  "description": "High-converting, mobile-first, 60 FPS landing page for NOISED Festival in Teresópolis - RJ (Mirante da Vista Soberba)",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "landing-page",
+    "festival",
+    "teresopolis",
+    "mobile-first",
+    "glassmorphism",
+    "neon",
+    "ux-ui"
+  ],
+  "author": "NOISED Festival Design Team",
+  "license": "MIT"
+}
